@@ -9,7 +9,7 @@
 
 #define displayx 1280
 #define displayy 720
-#define velocidade 10
+#define velocidade 15
 
 int rgbBG[3] = {31, 31, 31};
 
@@ -46,6 +46,7 @@ int main()
     ALLEGRO_BITMAP *BFase_1 = al_load_bitmap("./sprites/Fase_1.png");                           // Background fase 1
     ALLEGRO_BITMAP *HLFase_1 = al_load_bitmap("./sprites/HighLigths/HLFase_1.png");             // HighLigth de interação
     ALLEGRO_BITMAP *HLFase_1_HTBox = al_load_bitmap("./sprites/HighLigths/HLFase_1_HTBox.png"); // HighLigth de interação Hit box de interação
+    ALLEGRO_BITMAP *PopUp = al_load_bitmap("./sprites/PopUp.png");                              // PopUp resolução
 
     ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -60,6 +61,7 @@ int main()
     int Frames_Player = 3;
     char dir = 'b';
     int Fase = 1;
+    bool interacao = false, PopedUp = false;
     bool completo[2]{false, false};
 
     //------------------------Portas Menu---------------------------
@@ -95,7 +97,7 @@ int main()
         al_wait_for_event(event_queue, &event);
 
         // --------------Movimentação-----------------
-        if (true)
+        if (!PopedUp)
         {
             if (event.keyboard.keycode == ALLEGRO_KEY_D && pl_x < displayx - 120) // Ir direita
             {
@@ -155,6 +157,34 @@ int main()
             }
         }
 
+        if (PopedUp)
+        {
+            if (dir == 'b') // Mod Sprite parado baixo
+            {
+                currentframe_y = 0;
+                Frames_Player = 3;
+                frame_sprite_player = 0;
+            }
+            else if (dir == 'd') // Mod Sprite parado direita
+            {
+                currentframe_y = 130 * 3;
+                Frames_Player = 3;
+                frame_sprite_player = 0;
+            }
+            else if (dir == 'c') // Mod Sprite parado cima
+            {
+                currentframe_y = 130 * 2;
+                Frames_Player = 1;
+                frame_sprite_player = 0;
+            }
+            else if (dir == 'e') // Mod Sprite parado esquerda
+            {
+                currentframe_y = 130;
+                Frames_Player = 3;
+                frame_sprite_player = 0;
+            }
+        }
+
         frame_sprite_player += 0.09; // FPS sprite
 
         if (espera_Sprite_Player > 0) // espera para troca de sprite parado e movimento player
@@ -184,27 +214,48 @@ int main()
         else if (Fase == 1) // Fase 1
         {
             al_draw_bitmap(BFase_1, 10, 10, 0);
-            al_draw_bitmap_region(BFase_1, 500, 500, 85, 29, 140, 139, 0);
+            al_draw_bitmap_region(BFase_1, 500, 500, 20, 29, 140, 139, 0);
+            al_draw_bitmap_region(BFase_1, 500, 500, 15, 29, 180, 139, 0);
 
             if (pl_x - 30 < 100 + 140 && pl_x + 120 > 100 && pl_y - 30 < 139 + 29)
             {
                 al_draw_bitmap(HLFase_1_HTBox, 100, 139, 0);
+                interacao = true;
             }
             else
             {
                 al_draw_bitmap(HLFase_1, 100, 139, 0);
+                interacao = false;
+            }
+
+            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true)
+            {
+                PopedUp = true;
+                al_draw_bitmap(PopUp, displayx / 2 - 300, displayy / 2 - 150, 0);
             }
         }
 
-        //------------------------interção--------------------------------
+        //------------------------interção escolha de fase--------------------------------
         if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
         {
             if (pl_x + 60 > PFase_1.pos_x1 && pl_x + 60 < PFase_1.pos_x2 && pl_y + 65 > PFase_1.pos_y1 && pl_y + 65 < PFase_1.pos_y2 && PFase_1.inter == true)
+            {
                 Fase = 1;
+                pl_x = 990;
+                pl_y = 560;
+            }
             if (pl_x + 60 > PFase_2.pos_x1 && pl_x + 60 < PFase_2.pos_x2 && pl_y + 65 > PFase_2.pos_y1 && pl_y + 65 < PFase_2.pos_y2 && PFase_2.inter == true)
+            {
                 Fase = 2;
+                pl_x = 990;
+                pl_y = 560;
+            }
             if (pl_x + 60 > PFase_3.pos_x1 && pl_x + 60 < PFase_3.pos_x2 && pl_y + 65 > PFase_3.pos_y1 && pl_y + 65 < PFase_3.pos_y2 && PFase_3.inter == true)
+            {
                 Fase = 3;
+                pl_x = 990;
+                pl_y = 560;
+            }
         }
 
         //------------------Animação player---------------------------------------
