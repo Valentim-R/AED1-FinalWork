@@ -3,6 +3,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/keyboard.h>
 
+
 // x sprite -> 120
 // y sprite -> 130
 
@@ -32,9 +33,13 @@ int main()
     al_set_window_position(display, 200, 200);
 
     ALLEGRO_FONT *font = al_create_builtin_font();
+
+    //fps
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0);
 
-    ALLEGRO_BITMAP *sprite = al_load_bitmap("./sprites/SpritePlayer.png");
+    //Sprites
+    ALLEGRO_BITMAP *Sprite_Player = al_load_bitmap("./sprites/SpritePlayer.png");
+    ALLEGRO_BITMAP *Sprite_Preto = al_load_bitmap("./sprites/SpritePreto.jpg");
 
     ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -53,6 +58,7 @@ int main()
     {
         ALLEGRO_EVENT event;
         al_wait_for_event(event_queue, &event);
+
 
         // Movimentação
         if (event.keyboard.keycode == ALLEGRO_KEY_D && pl_x < displayx - 120) // Ir direita
@@ -126,7 +132,7 @@ int main()
 
         if (dir == 'c' && espera_Sprite_Player == 0) // caso parado para cima travar sprite
         {
-            al_draw_bitmap_region(sprite, 0, currentframe_y, 120, 130, pl_x, pl_y, 0);
+            al_draw_bitmap_region(Sprite_Player, 0, currentframe_y, 120, 130, pl_x, pl_y, 0);
         }
 
         // Interação
@@ -138,7 +144,9 @@ int main()
         al_clear_to_color(al_map_rgb(red, green, blue)); // Cor BG
 
         // Animação player
-        al_draw_bitmap_region(sprite, 120 * (int)frame_sprite_player, currentframe_y, 120, 130, pl_x, pl_y, 0);
+        al_draw_bitmap_region(Sprite_Preto,0,0,140,140,(displayx/2)-70,(displayy/2)-70,0);
+        al_draw_bitmap_region(Sprite_Player, 120 * (int)frame_sprite_player, currentframe_y, 120, 130, pl_x, pl_y, 0);
+        
 
         
         al_flip_display();
@@ -149,7 +157,8 @@ int main()
         }
     }
 
-    al_destroy_bitmap(sprite);
+    al_destroy_bitmap(Sprite_Preto);
+    al_destroy_bitmap(Sprite_Player);
     al_destroy_font(font);
     al_destroy_display(display);
     al_destroy_event_queue(event_queue);
