@@ -11,10 +11,7 @@
 #define displayy 720
 #define velocidade 10
 
-int red = 255;
-int green = 255;
-int blue = 255;
-
+int rgbBG[3] = {31, 31, 31};
 
 //----------HitBox-----------------
 class HitBox
@@ -26,7 +23,6 @@ public:
     int pos_y2;
     bool inter;
 };
-
 
 int main()
 {
@@ -61,7 +57,7 @@ int main()
     int Frames_Player = 3;
     char dir = 'b';
     int Fase = 0;
-    bool completo[3] = {false,false,false};
+    bool completo[2]{false, false};
 
     //------------------------Portas Menu---------------------------
     HitBox PFase_1, PFase_2, PFase_3;
@@ -69,16 +65,25 @@ int main()
     PFase_1.pos_x2 = displayx / 4 * 1 + 70;
     PFase_1.pos_y1 = displayy / 2 - 70;
     PFase_1.pos_y2 = displayy / 2 + 70;
+    PFase_1.inter = true;
 
     PFase_2.pos_x1 = displayx / 4 * 2 - 70;
     PFase_2.pos_x2 = displayx / 4 * 2 + 70;
     PFase_2.pos_y1 = displayy / 2 - 70;
     PFase_2.pos_y2 = displayy / 2 + 70;
+    if (completo[0] == true)
+        PFase_2.inter = true;
+    else
+        PFase_2.inter = false;
 
     PFase_3.pos_x1 = displayx / 4 * 3 - 70;
     PFase_3.pos_x2 = displayx / 4 * 3 + 70;
     PFase_3.pos_y1 = displayy / 2 - 70;
     PFase_3.pos_y2 = displayy / 2 + 70;
+    if (completo[1] == true)
+        PFase_3.inter = true;
+    else
+        PFase_3.inter = false;
 
     //---------------------loop principal--------------------------
     while (true)
@@ -159,23 +164,33 @@ int main()
             frame_sprite_player -= Frames_Player;
         }
 
-
         if (dir == 'c' && espera_Sprite_Player == 0) // caso parado para cima travar sprite
         {
             al_draw_bitmap_region(Sprite_Player, 0, currentframe_y, 120, 130, pl_x, pl_y, 0);
         }
 
+        al_clear_to_color(al_map_rgb(rgbBG[0], rgbBG[1], rgbBG[2])); // Cor BG
 
+        //------------------------Construção cenario--------------------------------------------------
+        if (Fase == 0)
+        {
+            al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_1.pos_x1, PFase_1.pos_y1, 0);
+            al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_2.pos_x1, PFase_2.pos_y1, 0);
+            al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_3.pos_x1, PFase_3.pos_y1, 0);
+        }
 
-        al_clear_to_color(al_map_rgb(31, 31, 31)); // Cor BG
+        //------------------------interção--------------------------------
+        if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
+        {
+            if (pl_x + 60 > PFase_1.pos_x1 && pl_x + 60 < PFase_1.pos_x2 && pl_y + 65 > PFase_1.pos_y1 && pl_y + 65 < PFase_1.pos_y2 && PFase_1.inter == true)
+                Fase = 1;
+            if (pl_x + 60 > PFase_2.pos_x1 && pl_x + 60 < PFase_2.pos_x2 && pl_y + 65 > PFase_2.pos_y1 && pl_y + 65 < PFase_2.pos_y2 && PFase_2.inter == true)
+                Fase = 2;
+            if (pl_x + 60 > PFase_3.pos_x1 && pl_x + 60 < PFase_3.pos_x2 && pl_y + 65 > PFase_3.pos_y1 && pl_y + 65 < PFase_3.pos_y2 && PFase_3.inter == true)
+                Fase = 3;
+        }
 
-
-        al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_1.pos_x1, PFase_1.pos_y1, 0);
-        al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_2.pos_x1, PFase_2.pos_y1, 0);
-        al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_3.pos_x1, PFase_3.pos_y1, 0);
-
-
-        // Animação player
+        //------------------Animação player---------------------------------------
         al_draw_bitmap_region(Sprite_Player, 120 * (int)frame_sprite_player, currentframe_y, 120, 130, pl_x, pl_y, 0);
 
         al_flip_display();
