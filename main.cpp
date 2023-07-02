@@ -3,7 +3,6 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/keyboard.h>
 
-
 // x sprite -> 120
 // y sprite -> 130
 
@@ -15,10 +14,8 @@ int red = 255;
 int green = 255;
 int blue = 255;
 
-
 void interacao()
 {
-    
 }
 
 int main()
@@ -34,10 +31,10 @@ int main()
 
     ALLEGRO_FONT *font = al_create_builtin_font();
 
-    //fps
+    // fps
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0);
 
-    //Sprites
+    // Sprites
     ALLEGRO_BITMAP *Sprite_Player = al_load_bitmap("./sprites/SpritePlayer.png");
     ALLEGRO_BITMAP *Sprite_Preto = al_load_bitmap("./sprites/SpritePreto.jpg");
 
@@ -54,71 +51,75 @@ int main()
     int Frames_Player = 3;
     char dir = 'b';
 
+
+//---------------------loop principal--------------------------
     while (true)
     {
         ALLEGRO_EVENT event;
         al_wait_for_event(event_queue, &event);
 
+        // --------------Movimentação-----------------
+        if (true)
+        {
+            if (event.keyboard.keycode == ALLEGRO_KEY_D && pl_x < displayx - 120) // Ir direita
+            {
+                pl_x += velocidade;
+                currentframe_y = 130 * 7;
+                espera_Sprite_Player = 10;
+                Frames_Player = 10;
+                dir = 'd';
+            }
+            else if (event.keyboard.keycode == ALLEGRO_KEY_A && pl_x > 0) // Ir esquerda
+            {
+                pl_x -= velocidade;
+                currentframe_y = 130 * 5;
+                espera_Sprite_Player = 10;
+                Frames_Player = 10;
+                dir = 'e';
+            }
+            else if (event.keyboard.keycode == ALLEGRO_KEY_W && pl_y > 0) // Ir cima
+            {
+                pl_y -= velocidade;
+                currentframe_y = 130 * 6;
+                espera_Sprite_Player = 10;
+                Frames_Player = 10;
+                dir = 'c';
+            }
+            else if (event.keyboard.keycode == ALLEGRO_KEY_S && pl_y < displayy - 130) // Ir baixo
+            {
+                pl_y += velocidade;
+                currentframe_y = 130 * 4;
+                espera_Sprite_Player = 10;
+                Frames_Player = 10;
+                dir = 'b';
+            }
+            else if (espera_Sprite_Player == 0 && dir == 'b') // Mod Sprite parado baixo
+            {
+                currentframe_y = 0;
+                Frames_Player = 3;
+                frame_sprite_player = 0;
+            }
+            else if (espera_Sprite_Player == 0 && dir == 'd') // Mod Sprite parado direita
+            {
+                currentframe_y = 130 * 3;
+                Frames_Player = 3;
+                frame_sprite_player = 0;
+            }
+            else if (espera_Sprite_Player == 0 && dir == 'c') // Mod Sprite parado cima
+            {
+                currentframe_y = 130 * 2;
+                Frames_Player = 1;
+                frame_sprite_player = 0;
+            }
+            else if (espera_Sprite_Player == 0 && dir == 'e') // Mod Sprite parado esquerda
+            {
+                currentframe_y = 130;
+                Frames_Player = 3;
+                frame_sprite_player = 0;
+            }
+        }
 
-        // Movimentação
-        if (event.keyboard.keycode == ALLEGRO_KEY_D && pl_x < displayx - 120) // Ir direita
-        {
-            pl_x += velocidade;
-            currentframe_y = 130 * 7;
-            espera_Sprite_Player = 10;
-            Frames_Player = 10;
-            dir = 'd';
-        }
-        else if (event.keyboard.keycode == ALLEGRO_KEY_A && pl_x > 0) // Ir esquerda
-        {
-            pl_x -= velocidade;
-            currentframe_y = 130 * 5;
-            espera_Sprite_Player = 10;
-            Frames_Player = 10;
-            dir = 'e';
-        }
-        else if (event.keyboard.keycode == ALLEGRO_KEY_W && pl_y > 0) // Ir cima
-        {
-            pl_y -= velocidade;
-            currentframe_y = 130 * 6;
-            espera_Sprite_Player = 10;
-            Frames_Player = 10;
-            dir = 'c';
-        }
-        else if (event.keyboard.keycode == ALLEGRO_KEY_S && pl_y < displayy - 130) // Ir baixo
-        {
-            pl_y += velocidade;
-            currentframe_y = 130 * 4;
-            espera_Sprite_Player = 10;
-            Frames_Player = 10;
-            dir = 'b';
-        }
-        else if (espera_Sprite_Player == 0 && dir == 'b') // Mod Sprite parado baixo
-        {
-            currentframe_y = 0;
-            Frames_Player = 3;
-            frame_sprite_player = 0;
-        }
-        else if (espera_Sprite_Player == 0 && dir == 'd') // Mod Sprite parado direita
-        {
-            currentframe_y = 130 * 3;
-            Frames_Player = 3;
-            frame_sprite_player = 0;
-        }
-        else if (espera_Sprite_Player == 0 && dir == 'c') // Mod Sprite parado cima
-        {
-            currentframe_y = 130 * 2;
-            Frames_Player = 1;
-            frame_sprite_player = 0;
-        }
-        else if (espera_Sprite_Player == 0 && dir == 'e') // Mod Sprite parado esquerda
-        {
-            currentframe_y = 130;
-            Frames_Player = 3;
-            frame_sprite_player = 0;
-        }
-
-        frame_sprite_player += 0.09; // frame rate sprite
+        frame_sprite_player += 0.09; // FPS sprite
 
         if (espera_Sprite_Player > 0) // espera para troca de sprite parado e movimento player
         {
@@ -144,11 +145,9 @@ int main()
         al_clear_to_color(al_map_rgb(red, green, blue)); // Cor BG
 
         // Animação player
-        al_draw_bitmap_region(Sprite_Preto,0,0,140,140,(displayx/2)-70,(displayy/2)-70,0);
+        al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, (displayx / 2) - 70, (displayy / 2) - 70, 0);
         al_draw_bitmap_region(Sprite_Player, 120 * (int)frame_sprite_player, currentframe_y, 120, 130, pl_x, pl_y, 0);
-        
 
-        
         al_flip_display();
 
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
