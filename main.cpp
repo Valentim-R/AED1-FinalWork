@@ -41,8 +41,11 @@ int main()
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0);
 
     // Sprites
-    ALLEGRO_BITMAP *Sprite_Player = al_load_bitmap("./sprites/SpritePlayer.png");
-    ALLEGRO_BITMAP *Sprite_Preto = al_load_bitmap("./sprites/SpritePreto.jpg");
+    ALLEGRO_BITMAP *Sprite_Player = al_load_bitmap("./sprites/SpritePlayer.png");               // sprite sheet player
+    ALLEGRO_BITMAP *Sprite_Preto = al_load_bitmap("./sprites/SpritePreto.jpg");                 // Sprite bloco preto teste
+    ALLEGRO_BITMAP *BFase_1 = al_load_bitmap("./sprites/Fase_1.png");                           // Background fase 1
+    ALLEGRO_BITMAP *HLFase_1 = al_load_bitmap("./sprites/HighLigths/HLFase_1.png");             // HighLigth de interação
+    ALLEGRO_BITMAP *HLFase_1_HTBox = al_load_bitmap("./sprites/HighLigths/HLFase_1_HTBox.png"); // HighLigth de interação Hit box de interação
 
     ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -56,7 +59,7 @@ int main()
     int espera_Sprite_Player = 0;
     int Frames_Player = 3;
     char dir = 'b';
-    int Fase = 0;
+    int Fase = 1;
     bool completo[2]{false, false};
 
     //------------------------Portas Menu---------------------------
@@ -172,11 +175,25 @@ int main()
         al_clear_to_color(al_map_rgb(rgbBG[0], rgbBG[1], rgbBG[2])); // Cor BG
 
         //------------------------Construção cenario--------------------------------------------------
-        if (Fase == 0)
+        if (Fase == 0) // Menu
         {
             al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_1.pos_x1, PFase_1.pos_y1, 0);
             al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_2.pos_x1, PFase_2.pos_y1, 0);
             al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_3.pos_x1, PFase_3.pos_y1, 0);
+        }
+        else if (Fase == 1) // Fase 1
+        {
+            al_draw_bitmap(BFase_1, 10, 10, 0);
+            al_draw_bitmap_region(BFase_1, 500, 500, 85, 29, 140, 139, 0);
+
+            if (pl_x - 30 < 100 + 140 && pl_x + 120 > 100 && pl_y - 30 < 139 + 29)
+            {
+                al_draw_bitmap(HLFase_1_HTBox, 100, 139, 0);
+            }
+            else
+            {
+                al_draw_bitmap(HLFase_1, 100, 139, 0);
+            }
         }
 
         //------------------------interção--------------------------------
@@ -201,6 +218,7 @@ int main()
         }
     }
 
+    al_destroy_bitmap(BFase_1);
     al_destroy_bitmap(Sprite_Preto);
     al_destroy_bitmap(Sprite_Player);
     al_destroy_font(font);
