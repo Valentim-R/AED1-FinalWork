@@ -53,7 +53,7 @@ int main()
     // Sprites
     ALLEGRO_BITMAP *Sprite_Player = al_load_bitmap("./sprites/SpritePlayer.png");               // sprite sheet player
     ALLEGRO_BITMAP *Sprite_Preto = al_load_bitmap("./sprites/SpritePreto.jpg");                 // Sprite bloco preto teste
-    ALLEGRO_BITMAP *BFase_1 = al_load_bitmap("./sprites/Fase_1.png");                           // Background fase 1
+    ALLEGRO_BITMAP *BFase_1_2 = al_load_bitmap("./sprites/Fase_1.png");                           // Background fase 1
     ALLEGRO_BITMAP *HLFase_1 = al_load_bitmap("./sprites/HighLigths/HLFase_1.png");             // HighLigth de interação
     ALLEGRO_BITMAP *HLFase_1_HTBox = al_load_bitmap("./sprites/HighLigths/HLFase_1_HTBox.png"); // HighLigth de interação Hit box de interação
     ALLEGRO_BITMAP *PopUp = al_load_bitmap("./sprites/PopUp.png");                              // PopUp resolução
@@ -66,6 +66,7 @@ int main()
     ALLEGRO_BITMAP *Operador_soma = al_load_bitmap("./sprites/Operador_soma.png");              // Operador Soma
     ALLEGRO_BITMAP *Operador_igualdade = al_load_bitmap("./sprites/Operador_igualdade.png");    // Operador Igualdade
     ALLEGRO_BITMAP *Num_7_Seg = al_load_bitmap("./sprites/Numeros_7_Segmentos.png");            // Sprite sheet display 7 segmentos
+    ALLEGRO_BITMAP *Operador_desigualdade = al_load_bitmap("./sprites/Operador_desigualdade.png"); // Operador desigualdade
 
     ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -83,10 +84,9 @@ int main()
     int Fase = 0;
     char dir = 'b';
     bool interacao = false, PopedUp = false;
-    bool completo[2]{false, false};
     int X = 1;
     int Y = 1;
-    int resp1 = 3;
+    int resp1 = 3, resp2 =9;
 
     //------------------------Portas Menu---------------------------
     HitBox PFase_1, PFase_2, PFase_3, Psaida_1, Psaida_2;
@@ -118,7 +118,7 @@ int main()
     Psaida_2.pos_x2 = displayx - 100;
     Psaida_2.pos_y1 = displayy - 240;
     Psaida_2.pos_y2 = displayy - 100;
-    Psaida_2.inter = true;
+    Psaida_2.inter = false;
 
     //---------------------loop principal--------------------------
     while (true)
@@ -254,10 +254,10 @@ int main()
         }
         else if (Fase == 1) // Fase 1
         {
-            al_draw_bitmap(BFase_1, 10, 10, 0);
-            al_draw_bitmap_region(BFase_1, 500, 500, 20, 29, 140, 139, 0);
-            al_draw_bitmap_region(BFase_1, 500, 500, 15, 29, 180, 139, 0);
-            al_draw_bitmap_region(BFase_1, 500, 500, 15, 29, 210, 139, 0);
+            al_draw_bitmap(BFase_1_2, 10, 10, 0);
+            al_draw_bitmap_region(BFase_1_2, 500, 500, 20, 29, 140, 139, 0);
+            al_draw_bitmap_region(BFase_1_2, 500, 500, 15, 29, 180, 139, 0);
+            al_draw_bitmap_region(BFase_1_2, 500, 500, 15, 29, 210, 139, 0);
             if (PopedUp == false)
             {
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 148, 150, 0, "%d", X);
@@ -370,7 +370,121 @@ int main()
         }
         else if (Fase == 2) // Fase 2
         {
-            al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, Psaida_2.pos_x1, Psaida_2.pos_y1, 0);
+            al_draw_bitmap(BFase_1_2, 10, 10, 0);
+            al_draw_bitmap_region(BFase_1_2, 500, 500, 20, 29, 140, 139, 0);
+            al_draw_bitmap_region(BFase_1_2, 500, 500, 15, 29, 180, 139, 0);
+            al_draw_bitmap_region(BFase_1_2, 500, 500, 30, 29, 195, 139, 0);
+            
+            if (PopedUp == false)
+            {
+                al_draw_textf(font, al_map_rgb(255, 255, 255), 148, 150, 0, "%d", X);
+                al_draw_textf(font, al_map_rgb(255, 255, 255), 180, 150, 0, "%d", Y);
+                al_draw_textf(font, al_map_rgb(255, 255, 255), 193, 150, 0, "!=");
+                if (X + Y != resp2)
+                {
+                    al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, Psaida_2.pos_x1, Psaida_2.pos_y1, 0);
+                    Psaida_2.inter = true;
+                    PFase_3.inter = true;
+                    al_draw_textf(font, al_map_rgb(0, 255, 0), 216, 150, 0, "%d", resp2);
+                }
+                else
+                    al_draw_textf(font, al_map_rgb(255, 0, 0), 216, 150, 0, "%d", resp2);
+
+                if (pl_x - 30 < 100 + 140 && pl_x + 120 > 100 && pl_y - 30 < 139 + 29)
+                {
+                    if (X + Y == resp2)
+                        al_draw_bitmap(HLFase_1_HTBox, 100, 139, 0);
+                    interacao = true;
+                }
+                else
+                {
+                    if (X + Y == resp2)
+                        al_draw_bitmap(HLFase_1, 100, 139, 0);
+                    interacao = false;
+                }
+            }
+
+            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true)
+            {
+                //------------Inicializar PopUp resposta-----------------------
+                PopedUp = true;
+
+                al_draw_bitmap(PopUp, displayx / 2 - 300, displayy / 2 - 150, 0);
+
+                al_draw_bitmap(Arrow_up, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4) * 1, 0);
+                al_draw_bitmap_region(Num_7_Seg, 10 + (29 * X) + (32 * (X - 1)), 167, 32, 60, displayx / 2 - 194, displayy / 2 - 150 - 19 + ((300 - 90) / 4) * 2, 0);
+                al_draw_bitmap(Arrow_down, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
+
+                al_draw_bitmap(Operador_soma, displayx / 2 - 87.5 - 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
+
+                al_draw_bitmap(Arrow_up, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 1, 0);
+                al_draw_bitmap_region(Num_7_Seg, 10 + (29 * Y) + (32 * (Y - 1)), 167, 32, 60, displayx / 2 - 19, displayy / 2 - 150 - 19 + ((300 - 90) / 4) * 2, 0);
+                al_draw_bitmap(Arrow_down, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
+
+                al_draw_bitmap(Operador_desigualdade, displayx / 2 + 87.5, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
+
+                al_draw_bitmap_region(Num_7_Seg, 10 + (29 * resp2) + (32 * (resp2 - 1)), 167, 32, 60, displayx / 2 + 194, displayy / 2 - 150 - 19 + ((300 - 90) / 4) * 2, 0);
+
+                al_draw_bitmap(Botao_OK, displayx / 2 - 50, displayy / 2 + 90, 0);
+
+                //---------------HL botões----------------
+                if (mouse_x > displayx / 2 - 50 && mouse_x < displayx / 2 + 50 && mouse_y > displayy / 2 + 90 && mouse_y < displayy / 2 + 140)
+                {
+                    al_draw_bitmap(Botao_OK_HL, displayx / 2 - 50, displayy / 2 + 90, 0);
+                    if (event.mouse.pressure)
+                    {
+                        PopedUp = false;
+                        if (X > 9)
+                            X = 0;
+                        if (Y > 9)
+                            Y = 0;
+                    }
+                }
+                else if (mouse_x > displayx / 2 - 200 && mouse_x < displayx / 2 - 200 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
+                {
+                    al_draw_bitmap(Arrow_up_HL, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4), 0);
+                    if (event.mouse.pressure)
+                    {
+                        X++;
+                        if (X > 10)
+                            X = 1;
+                        cout << X;
+                    }
+                }
+                else if (mouse_x > displayx / 2 - 200 && mouse_x < displayx / 2 - 200 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
+                {
+                    al_draw_bitmap(Arrow_down_HL, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
+                    if (event.mouse.pressure)
+                    {
+                        X--;
+                        if (X < 1)
+                            X = 10;
+                        cout << X;
+                    }
+                }
+                else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
+                {
+                    al_draw_bitmap(Arrow_up_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
+                    if (event.mouse.pressure)
+                    {
+                        Y++;
+                        if (Y > 10)
+                            Y = 1;
+                        cout << Y;
+                    }
+                }
+                else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
+                {
+                    al_draw_bitmap(Arrow_down_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
+                    if (event.mouse.pressure)
+                    {
+                        Y--;
+                        if (Y < 1)
+                            Y = 10;
+                        cout << Y;
+                    }
+                }
+            }
         }
 
         //------------------------interção escolha de fase--------------------------------
@@ -381,18 +495,24 @@ int main()
                 Fase = 1;
                 pl_x = 990;
                 pl_y = 560;
+                X=0;
+                Y=0;
             }
             else if (pl_x + 60 > PFase_2.pos_x1 && pl_x + 60 < PFase_2.pos_x2 && pl_y + 65 > PFase_2.pos_y1 && pl_y + 65 < PFase_2.pos_y2 && PFase_2.inter == true)
             {
                 Fase = 2;
                 pl_x = 990;
                 pl_y = 560;
+                X=5;
+                Y=4;
             }
             else if (pl_x + 60 > PFase_3.pos_x1 && pl_x + 60 < PFase_3.pos_x2 && pl_y + 65 > PFase_3.pos_y1 && pl_y + 65 < PFase_3.pos_y2 && PFase_3.inter == true)
             {
                 Fase = 3;
                 pl_x = 990;
                 pl_y = 560;
+                X=0;
+                Y=0;
             }
             else if (pl_x + 60 > Psaida_1.pos_x1 && pl_x + 60 < Psaida_1.pos_x2 && pl_y + 65 > Psaida_1.pos_y1 && pl_y + 65 < Psaida_1.pos_y2 && Psaida_1.inter == true)
             {
@@ -419,6 +539,8 @@ int main()
         }
     }
 
+
+    al_destroy_bitmap(Operador_desigualdade);
     al_destroy_bitmap(Num_7_Seg);
     al_destroy_bitmap(Operador_igualdade);
     al_destroy_bitmap(Operador_soma);
@@ -431,7 +553,7 @@ int main()
     al_destroy_bitmap(PopUp);
     al_destroy_bitmap(HLFase_1_HTBox);
     al_destroy_bitmap(HLFase_1);
-    al_destroy_bitmap(BFase_1);
+    al_destroy_bitmap(BFase_1_2);
     al_destroy_bitmap(Sprite_Preto);
     al_destroy_bitmap(Sprite_Player);
     al_destroy_font(font);
