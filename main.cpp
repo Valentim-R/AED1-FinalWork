@@ -20,8 +20,8 @@ using namespace std;
 
 int rgbBG[3] = {31, 31, 31}, rgbfontResp[3] = {255, 255, 255};
 
-//--------------HitBox-----------------
-class HitBox
+//--------------HitBox Portas-----------------
+class HitBoxPortas
 {
 public:
     int pos_x1;
@@ -51,22 +51,24 @@ int main()
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0);
 
     // Sprites
-    ALLEGRO_BITMAP *Sprite_Player = al_load_bitmap("./sprites/SpritePlayer.png");               // sprite sheet player
-    ALLEGRO_BITMAP *Sprite_Preto = al_load_bitmap("./sprites/SpritePreto.jpg");                 // Sprite bloco preto teste
-    ALLEGRO_BITMAP *BFase_1_2 = al_load_bitmap("./sprites/Fase_1.png");                           // Background fase 1
-    ALLEGRO_BITMAP *HLFase_1 = al_load_bitmap("./sprites/HighLigths/HLFase_1.png");             // HighLigth de interação
-    ALLEGRO_BITMAP *HLFase_1_HTBox = al_load_bitmap("./sprites/HighLigths/HLFase_1_HTBox.png"); // HighLigth de interação Hit box de interação
-    ALLEGRO_BITMAP *PopUp = al_load_bitmap("./sprites/PopUp.png");                              // PopUp resolução
-    ALLEGRO_BITMAP *Botao_OK = al_load_bitmap("./sprites/Botão_OK.png");                        // Botão OK
-    ALLEGRO_BITMAP *Botao_OK_HL = al_load_bitmap("./sprites/Botão_OK_HL.png");                  // Botão OK HighLighted
-    ALLEGRO_BITMAP *Arrow_up = al_load_bitmap("./sprites/Arrow_up.png");                        // Botão de seta para cima
-    ALLEGRO_BITMAP *Arrow_up_HL = al_load_bitmap("./sprites/Arrow_up_HL.png");                  // Botão seta para cima HighLighted
-    ALLEGRO_BITMAP *Arrow_down = al_load_bitmap("./sprites/Arrow_down.png");                    // Botão seta para baixo
-    ALLEGRO_BITMAP *Arrow_down_HL = al_load_bitmap("./sprites/Arrow_down_HL.png");              // Botão seta para baixo HighLighted
-    ALLEGRO_BITMAP *Operador_soma = al_load_bitmap("./sprites/Operador_soma.png");              // Operador Soma
-    ALLEGRO_BITMAP *Operador_igualdade = al_load_bitmap("./sprites/Operador_igualdade.png");    // Operador Igualdade
-    ALLEGRO_BITMAP *Num_7_Seg = al_load_bitmap("./sprites/Numeros_7_Segmentos.png");            // Sprite sheet display 7 segmentos
+    ALLEGRO_BITMAP *Sprite_Player = al_load_bitmap("./sprites/SpritePlayer.png");                  // sprite sheet player
+    ALLEGRO_BITMAP *Sprite_Preto = al_load_bitmap("./sprites/SpritePreto.jpg");                    // Sprite bloco preto teste
+    ALLEGRO_BITMAP *BFase_1_2_3 = al_load_bitmap("./sprites/Fase_1.png");                          // Background fase 1
+    ALLEGRO_BITMAP *HLFase_1 = al_load_bitmap("./sprites/HighLigths/HLFase_1.png");                // HighLigth de interação
+    ALLEGRO_BITMAP *HLFase_1_HTBox = al_load_bitmap("./sprites/HighLigths/HLFase_1_HTBox.png");    // HighLigth de interação Hit box de interação
+    ALLEGRO_BITMAP *PopUp = al_load_bitmap("./sprites/PopUp.png");                                 // PopUp resolução
+    ALLEGRO_BITMAP *Botao_OK = al_load_bitmap("./sprites/Botão_OK.png");                           // Botão OK
+    ALLEGRO_BITMAP *Botao_OK_HL = al_load_bitmap("./sprites/Botão_OK_HL.png");                     // Botão OK HighLighted
+    ALLEGRO_BITMAP *Arrow_up = al_load_bitmap("./sprites/Arrow_up.png");                           // Botão de seta para cima
+    ALLEGRO_BITMAP *Arrow_up_HL = al_load_bitmap("./sprites/Arrow_up_HL.png");                     // Botão seta para cima HighLighted
+    ALLEGRO_BITMAP *Arrow_down = al_load_bitmap("./sprites/Arrow_down.png");                       // Botão seta para baixo
+    ALLEGRO_BITMAP *Arrow_down_HL = al_load_bitmap("./sprites/Arrow_down_HL.png");                 // Botão seta para baixo HighLighted
+    ALLEGRO_BITMAP *Operador_soma = al_load_bitmap("./sprites/Operador_soma.png");                 // Operador Soma
+    ALLEGRO_BITMAP *Operador_igualdade = al_load_bitmap("./sprites/Operador_igualdade.png");       // Operador Igualdade
+    ALLEGRO_BITMAP *Num_7_Seg = al_load_bitmap("./sprites/Numeros_7_Segmentos.png");               // Sprite sheet display 7 segmentos
     ALLEGRO_BITMAP *Operador_desigualdade = al_load_bitmap("./sprites/Operador_desigualdade.png"); // Operador desigualdade
+    ALLEGRO_BITMAP *Operador_Maior = al_load_bitmap("./sprites/Operador_Maior.png");               // Operador Maior
+    ALLEGRO_BITMAP *Operador_Menor = al_load_bitmap("./sprites/Operador_Menor.png");               // operador menor
 
     ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -86,10 +88,10 @@ int main()
     bool interacao = false, PopedUp = false;
     int X = 1;
     int Y = 1;
-    int resp1 = 3, resp2 =9;
+    int resp1 = 3, resp2 = 9, resp3 = 0;
 
     //------------------------Portas Menu---------------------------
-    HitBox PFase_1, PFase_2, PFase_3, Psaida_1, Psaida_2;
+    HitBoxPortas PFase_1, PFase_2, PFase_3, Psaida_1, Psaida_2, Psaida_3;
     PFase_1.pos_x1 = displayx / (Cportas + 1) * 1 - 70;
     PFase_1.pos_x2 = displayx / (Cportas + 1) * 1 + 70;
     PFase_1.pos_y1 = displayy / (Fportas + 1) - 70;
@@ -106,7 +108,7 @@ int main()
     PFase_3.pos_x2 = displayx / (Cportas + 1) * 3 + 70;
     PFase_3.pos_y1 = displayy / (Fportas + 1) - 70;
     PFase_3.pos_y2 = displayy / (Fportas + 1) + 70;
-    PFase_3.inter = false;
+    PFase_3.inter = true;
 
     Psaida_1.pos_x1 = displayx - 240;
     Psaida_1.pos_x2 = displayx - 100;
@@ -119,6 +121,12 @@ int main()
     Psaida_2.pos_y1 = displayy - 240;
     Psaida_2.pos_y2 = displayy - 100;
     Psaida_2.inter = false;
+
+    Psaida_3.pos_x1 = displayx - 240;
+    Psaida_3.pos_x2 = displayx - 100;
+    Psaida_3.pos_y1 = displayy - 240;
+    Psaida_3.pos_y2 = displayy - 100;
+    Psaida_3.inter = false;
 
     //---------------------loop principal--------------------------
     while (true)
@@ -245,7 +253,7 @@ int main()
 
         al_clear_to_color(al_map_rgb(rgbBG[0], rgbBG[1], rgbBG[2])); // Cor BG
 
-        //------------------------Construção cenario--------------------------------------------------
+        //------------------------ Construção de cenario -------------------------------------------
         if (Fase == 0) // Menu
         {
             al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_1.pos_x1, PFase_1.pos_y1, 0);
@@ -254,10 +262,10 @@ int main()
         }
         else if (Fase == 1) // Fase 1
         {
-            al_draw_bitmap(BFase_1_2, 10, 10, 0);
-            al_draw_bitmap_region(BFase_1_2, 500, 500, 20, 29, 140, 139, 0);
-            al_draw_bitmap_region(BFase_1_2, 500, 500, 15, 29, 180, 139, 0);
-            al_draw_bitmap_region(BFase_1_2, 500, 500, 15, 29, 210, 139, 0);
+            al_draw_bitmap(BFase_1_2_3, 10, 10, 0);
+            al_draw_bitmap_region(BFase_1_2_3, 500, 500, 20, 29, 140, 139, 0);
+            al_draw_bitmap_region(BFase_1_2_3, 500, 500, 15, 29, 180, 139, 0);
+            al_draw_bitmap_region(BFase_1_2_3, 500, 500, 15, 29, 210, 139, 0);
             if (PopedUp == false)
             {
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 148, 150, 0, "%d", X);
@@ -370,11 +378,11 @@ int main()
         }
         else if (Fase == 2) // Fase 2
         {
-            al_draw_bitmap(BFase_1_2, 10, 10, 0);
-            al_draw_bitmap_region(BFase_1_2, 500, 500, 20, 29, 140, 139, 0);
-            al_draw_bitmap_region(BFase_1_2, 500, 500, 15, 29, 180, 139, 0);
-            al_draw_bitmap_region(BFase_1_2, 500, 500, 30, 29, 195, 139, 0);
-            
+            al_draw_bitmap(BFase_1_2_3, 10, 10, 0);
+            al_draw_bitmap_region(BFase_1_2_3, 500, 500, 20, 29, 140, 139, 0);
+            al_draw_bitmap_region(BFase_1_2_3, 500, 500, 15, 29, 180, 139, 0);
+            al_draw_bitmap_region(BFase_1_2_3, 500, 500, 30, 29, 195, 139, 0);
+
             if (PopedUp == false)
             {
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 148, 150, 0, "%d", X);
@@ -486,7 +494,95 @@ int main()
                 }
             }
         }
+        else if (Fase == 3) // Fase 3
+        {
+            al_draw_bitmap(BFase_1_2_3, 10, 10, 0);
+            al_draw_bitmap_region(BFase_1_2_3, 500, 500, 85, 29, 140, 139, 0);
 
+            if (PopedUp == false)
+            {
+                al_draw_textf(font, al_map_rgb(255, 255, 255), 148, 150, 0, "%d", X);
+                al_draw_textf(font, al_map_rgb(255, 255, 255), 213, 150, 0, "%d", Y);
+                if (resp3 == 1)
+                    al_draw_textf(font, al_map_rgb(255, 255, 255), 182, 150, 0, ">");
+                else if (resp3 == -1)
+                    al_draw_textf(font, al_map_rgb(255, 255, 255), 182, 150, 0, "<");
+                if (resp3 == -1)
+                {
+                    al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, Psaida_2.pos_x1, Psaida_2.pos_y1, 0);
+                    Psaida_2.inter = true;
+                    PFase_3.inter = true;
+                }
+                if (pl_x - 30 < 100 + 140 && pl_x + 120 > 100 && pl_y - 30 < 139 + 29)
+                {
+                    al_draw_bitmap(HLFase_1_HTBox, 100, 139, 0);
+                    interacao = true;
+                }
+                else
+                {
+                    al_draw_bitmap(HLFase_1, 100, 139, 0);
+                    interacao = false;
+                }
+            }
+
+            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true)
+            {
+                //------------Inicializar PopUp resposta-----------------------
+                PopedUp = true;
+
+                al_draw_bitmap(PopUp, displayx / 2 - 300, displayy / 2 - 150, 0);
+
+                al_draw_bitmap_region(Num_7_Seg, 10 + (29 * X) + (32 * (X - 1)), 167, 32, 60, displayx / 2 - 132, displayy / 2 - 150 - 19 + ((300 - 90) / 4) * 2, 0);
+
+                al_draw_bitmap(Arrow_up, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
+
+                if (resp3 == 1)
+                    al_draw_bitmap(Operador_Maior, displayx / 2- 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
+                else if (resp3 == -1)
+                    al_draw_bitmap(Operador_Menor, displayx / 2 - 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
+                al_draw_bitmap(Arrow_down, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4)*3, 0);
+
+                al_draw_bitmap_region(Num_7_Seg, 10 + (29 * Y) + (32 * (Y - 1)), 167, 32, 60, displayx / 2 + 100, displayy / 2 - 150 - 19 + ((300 - 90) / 4) * 2, 0);
+
+                al_draw_bitmap(Botao_OK, displayx / 2 - 50, displayy / 2 + 90, 0);
+
+                //---------------HL botões----------------
+                if (mouse_x > displayx / 2 - 50 && mouse_x < displayx / 2 + 50 && mouse_y > displayy / 2 + 90 && mouse_y < displayy / 2 + 140)
+                {
+                    al_draw_bitmap(Botao_OK_HL, displayx / 2 - 50, displayy / 2 + 90, 0);
+                    if (event.mouse.pressure)
+                    {
+                        PopedUp = false;
+                        if (X > 9)
+                            X = 0;
+                        if (Y > 9)
+                            Y = 0;
+                    }
+                }
+                else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
+                {
+                    al_draw_bitmap(Arrow_up_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
+                    if (event.mouse.pressure)
+                    {
+                        resp3++;
+                        if (resp3 > 1)
+                            resp3 = -1;
+                        cout << resp3;
+                    }
+                }
+                else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
+                {
+                    al_draw_bitmap(Arrow_down_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
+                    if (event.mouse.pressure)
+                    {
+                        resp3--;
+                        if (resp3 < -1)
+                            resp3 = 1;
+                        cout << resp3;
+                    }
+                }
+            }
+        }
         //------------------------interção escolha de fase--------------------------------
         if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
         {
@@ -495,24 +591,24 @@ int main()
                 Fase = 1;
                 pl_x = 990;
                 pl_y = 560;
-                X=0;
-                Y=0;
+                X = 0;
+                Y = 0;
             }
             else if (pl_x + 60 > PFase_2.pos_x1 && pl_x + 60 < PFase_2.pos_x2 && pl_y + 65 > PFase_2.pos_y1 && pl_y + 65 < PFase_2.pos_y2 && PFase_2.inter == true)
             {
                 Fase = 2;
                 pl_x = 990;
                 pl_y = 560;
-                X=5;
-                Y=4;
+                X = 5;
+                Y = 4;
             }
             else if (pl_x + 60 > PFase_3.pos_x1 && pl_x + 60 < PFase_3.pos_x2 && pl_y + 65 > PFase_3.pos_y1 && pl_y + 65 < PFase_3.pos_y2 && PFase_3.inter == true)
             {
                 Fase = 3;
                 pl_x = 990;
                 pl_y = 560;
-                X=0;
-                Y=0;
+                X = 3;
+                Y = 9;
             }
             else if (pl_x + 60 > Psaida_1.pos_x1 && pl_x + 60 < Psaida_1.pos_x2 && pl_y + 65 > Psaida_1.pos_y1 && pl_y + 65 < Psaida_1.pos_y2 && Psaida_1.inter == true)
             {
@@ -539,7 +635,8 @@ int main()
         }
     }
 
-
+    al_destroy_bitmap(Operador_Menor);
+    al_destroy_bitmap(Operador_Maior);
     al_destroy_bitmap(Operador_desigualdade);
     al_destroy_bitmap(Num_7_Seg);
     al_destroy_bitmap(Operador_igualdade);
@@ -553,7 +650,7 @@ int main()
     al_destroy_bitmap(PopUp);
     al_destroy_bitmap(HLFase_1_HTBox);
     al_destroy_bitmap(HLFase_1);
-    al_destroy_bitmap(BFase_1_2);
+    al_destroy_bitmap(BFase_1_2_3);
     al_destroy_bitmap(Sprite_Preto);
     al_destroy_bitmap(Sprite_Player);
     al_destroy_font(font);
