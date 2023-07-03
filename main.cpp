@@ -255,7 +255,6 @@ int main()
         else if (Fase == 1) // Fase 1
         {
             al_draw_bitmap(BFase_1, 10, 10, 0);
-            al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, Psaida_1.pos_x1, Psaida_1.pos_y1, 0);
             al_draw_bitmap_region(BFase_1, 500, 500, 20, 29, 140, 139, 0);
             al_draw_bitmap_region(BFase_1, 500, 500, 15, 29, 180, 139, 0);
             al_draw_bitmap_region(BFase_1, 500, 500, 15, 29, 210, 139, 0);
@@ -265,6 +264,7 @@ int main()
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 180, 150, 0, "%d", Y);
                 if (X + Y == resp1)
                 {
+                    al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, Psaida_1.pos_x1, Psaida_1.pos_y1, 0);
                     Psaida_1.inter = true;
                     PFase_2.inter = true;
                     al_draw_textf(font, al_map_rgb(0, 255, 0), 216, 150, 0, "%d", resp1);
