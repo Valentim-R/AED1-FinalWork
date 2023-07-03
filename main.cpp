@@ -89,6 +89,7 @@ int main()
     int X = 1;
     int Y = 1;
     int resp1 = 3, resp2 = 9, resp3 = 0;
+    int auxiliar = 0;
 
     //------------------------Portas Menu---------------------------
     HitBoxPortas PFase_1, PFase_2, PFase_3, Psaida_1, Psaida_2, Psaida_3;
@@ -108,7 +109,7 @@ int main()
     PFase_3.pos_x2 = displayx / (Cportas + 1) * 3 + 70;
     PFase_3.pos_y1 = displayy / (Fportas + 1) - 70;
     PFase_3.pos_y2 = displayy / (Fportas + 1) + 70;
-    PFase_3.inter = true;
+    PFase_3.inter = false;
 
     Psaida_1.pos_x1 = displayx - 240;
     Psaida_1.pos_x2 = displayx - 100;
@@ -537,10 +538,10 @@ int main()
                 al_draw_bitmap(Arrow_up, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
 
                 if (resp3 == 1)
-                    al_draw_bitmap(Operador_Maior, displayx / 2- 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
+                    al_draw_bitmap(Operador_Maior, displayx / 2 - 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
                 else if (resp3 == -1)
                     al_draw_bitmap(Operador_Menor, displayx / 2 - 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
-                al_draw_bitmap(Arrow_down, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4)*3, 0);
+                al_draw_bitmap(Arrow_down, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
 
                 al_draw_bitmap_region(Num_7_Seg, 10 + (29 * Y) + (32 * (Y - 1)), 167, 32, 60, displayx / 2 + 100, displayy / 2 - 150 - 19 + ((300 - 90) / 4) * 2, 0);
 
@@ -583,7 +584,8 @@ int main()
                 }
             }
         }
-        //------------------------interção escolha de fase--------------------------------
+        
+        //------------------------interção Portas--------------------------------
         if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
         {
             if (pl_x + 60 > PFase_1.pos_x1 && pl_x + 60 < PFase_1.pos_x2 && pl_y + 65 > PFase_1.pos_y1 && pl_y + 65 < PFase_1.pos_y2 && PFase_1.inter == true)
@@ -628,7 +630,8 @@ int main()
         al_draw_bitmap_region(Sprite_Player, 120 * (int)frame_sprite_player, currentframe_y, 120, 130, pl_x, pl_y, 0);
 
         al_flip_display();
-
+        
+        //------------------Fechar Jogo-------------------
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
         {
             break;
