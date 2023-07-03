@@ -61,7 +61,8 @@ int main()
     ALLEGRO_BITMAP *Arrow_up_HL = al_load_bitmap("./sprites/Arrow_up_HL.png");                  // Botão seta para cima HighLighted
     ALLEGRO_BITMAP *Arrow_down = al_load_bitmap("./sprites/Arrow_down.png");                    // Botão seta para baixo
     ALLEGRO_BITMAP *Arrow_down_HL = al_load_bitmap("./sprites/Arrow_down_HL.png");              // Botão seta para baixo HighLighted
-
+    ALLEGRO_BITMAP *Operador_soma = al_load_bitmap("./sprites/Operador_soma.png");              // Operador Soma
+    ALLEGRO_BITMAP *Operador_igualdade = al_load_bitmap("./sprites/Operador_igualdade.png");    // Operador Igualdade
 
     ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -69,7 +70,6 @@ int main()
     al_register_event_source(event_queue, al_get_keyboard_event_source());
     al_register_event_source(event_queue, al_get_mouse_event_source());
     al_start_timer(timer);
-
 
     float frame_sprite_player = 0.f;
     float mouse_x, mouse_y;
@@ -259,12 +259,23 @@ int main()
 
             if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true)
             {
+                //------------Inicializar PopUp resposta-----------------------
                 PopedUp = true;
                 al_draw_bitmap(PopUp, displayx / 2 - 300, displayy / 2 - 150, 0);
-                al_draw_bitmap(Arrow_up, displayx / 2 - 200, displayy / 2 -  + (300 - 90)/3, 0);
 
+                al_draw_bitmap(Arrow_up, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4), 0);
+                al_draw_bitmap(Arrow_down, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
 
-                //---------------Posição mouse----------------
+                al_draw_bitmap(Operador_soma, displayx / 2 - 87.5 - 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
+
+                al_draw_bitmap(Arrow_up, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
+                al_draw_bitmap(Arrow_down, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
+
+                al_draw_bitmap(Operador_igualdade, displayx / 2 + 87.5, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
+
+                al_draw_bitmap(Botao_OK, displayx / 2 - 50, displayy / 2 + 90, 0);
+
+                //---------------HL botões----------------
                 if (mouse_x > displayx / 2 - 50 && mouse_x < displayx / 2 + 50 && mouse_y > displayy / 2 + 90 && mouse_y < displayy / 2 + 140)
                 {
                     al_draw_bitmap(Botao_OK_HL, displayx / 2 - 50, displayy / 2 + 90, 0);
@@ -273,14 +284,24 @@ int main()
                         PopedUp = false;
                     }
                 }
-                else
+                else if (mouse_x > displayx / 2 - 200 && mouse_x < displayx / 2 - 200 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                 {
-                    al_draw_bitmap(Botao_OK, displayx / 2 - 50, displayy / 2 + 90, 0);
+                    al_draw_bitmap(Arrow_up_HL, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4), 0);
+                }
+                else if (mouse_x > displayx / 2 - 200 && mouse_x < displayx / 2 - 200 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
+                {
+                    al_draw_bitmap(Arrow_down_HL, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
+                }
+                else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
+                {
+                    al_draw_bitmap(Arrow_up_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
+                }
+                else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
+                {
+                    al_draw_bitmap(Arrow_down_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
                 }
             }
         }
-
-        //----------------------testes-----------------------------
 
         //------------------------interção escolha de fase--------------------------------
         if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
@@ -316,6 +337,17 @@ int main()
         }
     }
 
+    al_destroy_bitmap(Operador_igualdade);
+    al_destroy_bitmap(Operador_soma);
+    al_destroy_bitmap(Arrow_down_HL);
+    al_destroy_bitmap(Arrow_down);
+    al_destroy_bitmap(Arrow_up_HL);
+    al_destroy_bitmap(Arrow_up);
+    al_destroy_bitmap(Botao_OK_HL);
+    al_destroy_bitmap(Botao_OK);
+    al_destroy_bitmap(PopUp);
+    al_destroy_bitmap(HLFase_1_HTBox);
+    al_destroy_bitmap(HLFase_1);
     al_destroy_bitmap(BFase_1);
     al_destroy_bitmap(Sprite_Preto);
     al_destroy_bitmap(Sprite_Player);
