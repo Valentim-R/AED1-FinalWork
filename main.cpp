@@ -14,7 +14,7 @@ using namespace std;
 
 #define displayx 1280
 #define displayy 720
-#define velocidade 10
+#define velocidade 5
 #define Cportas 3
 #define Fportas 1
 
