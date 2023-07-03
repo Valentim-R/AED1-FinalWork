@@ -14,9 +14,13 @@ using namespace std;
 
 #define displayx 1280
 #define displayy 720
-#define velocidade 15
+#define velocidade 10
 #define Cportas 3
 #define Fportas 1
+
+// Codigo do teclado
+#define SEEN 1
+#define RELEASED 2
 
 int rgbBG[3] = {31, 31, 31}, rgbfontResp[3] = {255, 255, 255};
 
@@ -79,17 +83,21 @@ int main()
 
     float frame_sprite_player = 0.f;
     float mouse_x, mouse_y;
+    float mouseClickPositionX, mouseClickPositionY;
     int pl_x = 500, pl_y = 500;
     int currentframe_y = 130;
     int espera_Sprite_Player = 0;
     int Frames_Player = 3;
     int Fase = 0;
     char dir = 'b';
-    bool interacao = false, PopedUp = false;
+    bool interacao = false, PopedUp = false, done = false, logic = false;
     int X = 1;
     int Y = 1;
     int resp1 = 3, resp2 = 9, resp3 = 0;
     int auxiliar = 0, timer_auxiliar = 0;
+
+    unsigned char key[ALLEGRO_KEY_MAX];
+    memset(key, 0, sizeof(key));
 
     //------------------------Portas Menu---------------------------
     HitBoxPortas PFase_1, PFase_2, PFase_3, Psaida_1, Psaida_2, Psaida_3;
@@ -130,13 +138,11 @@ int main()
     Psaida_3.inter = false;
 
     //---------------------loop principal--------------------------
-    while (true)
+    while (!done)
     {
 
         ALLEGRO_EVENT event;
         al_wait_for_event(event_queue, &event);
-
-        cout << Fase;
 
         //-------------POSIÇOES MOUSE----------------------
         if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
@@ -145,12 +151,50 @@ int main()
             mouse_y = event.mouse.y;
         }
 
-        // --------------Movimentação-----------------
-        if (true)
+        switch (event.type)
+
+        // Aciona qunado a tela e fechada
         {
+        case ALLEGRO_EVENT_DISPLAY_CLOSE:
+            done = true;
+            break;
+
+        // Aciona quando bate o timer
+        case ALLEGRO_EVENT_TIMER:
+            logic = true;
+            break;
+
+        // Aciona quando precionada alguma tecla
+        case ALLEGRO_EVENT_KEY_DOWN:
+            key[event.keyboard.keycode] = SEEN | RELEASED;
+            break;
+
+        // Aciona qunado solta alguma tecla
+        case ALLEGRO_EVENT_KEY_UP:
+            key[event.keyboard.keycode] &= RELEASED;
+            break;
+
+        // Aciona quando precionado algum botao do mouse
+        case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+            if (event.mouse.button & 1) // Quando o botao precionado for o esquerdo
+            {
+                mouseClickPositionX = event.mouse.x;
+                mouseClickPositionY = event.mouse.y;
+            }
+        }
+        //-------------------------------------MOVIMENTO--------------------------------------------
+
+        if (logic)
+        {
+            // KEYBOARD
+            for (int i = 0; i < ALLEGRO_KEY_MAX; i++)
+            {
+                key[i] &= SEEN;
+            }
             if (!PopedUp)
             {
-                if (event.keyboard.keycode == ALLEGRO_KEY_D && pl_x < displayx - 120) // Ir direita
+                // move o circulo pra direita sempre que precionada a tecla right (Letra// D)
+                if (key[ALLEGRO_KEY_D] && pl_x + 130 < displayx)
                 {
                     pl_x += velocidade;
                     currentframe_y = 130 * 7;
@@ -158,7 +202,8 @@ int main()
                     Frames_Player = 10;
                     dir = 'd';
                 }
-                else if (event.keyboard.keycode == ALLEGRO_KEY_A && pl_x > 0) // Ir esquerda
+                // move o circulo pra esquerda sempre que precionada a tecla left (Letra// A)
+                else if (key[ALLEGRO_KEY_A] && pl_x > 0)
                 {
                     pl_x -= velocidade;
                     currentframe_y = 130 * 5;
@@ -166,15 +211,17 @@ int main()
                     Frames_Player = 10;
                     dir = 'e';
                 }
-                else if (event.keyboard.keycode == ALLEGRO_KEY_W && pl_y > 0) // Ir cima
+                // move o circulo pra direita sempre que precionada a tecla up (Letra W)
+                else if (key[ALLEGRO_KEY_W] && pl_y > 0)
                 {
                     pl_y -= velocidade;
                     currentframe_y = 130 * 6;
                     espera_Sprite_Player = 10;
                     Frames_Player = 10;
                     dir = 'c';
-                }
-                else if (event.keyboard.keycode == ALLEGRO_KEY_S && pl_y < displayy - 130) // Ir baixo
+
+                } // move o circulo pra esquerda sempre que precionada a tecla down (Letra// S)
+                else if (key[ALLEGRO_KEY_S] && pl_y + 130 < displayy)
                 {
                     pl_y += velocidade;
                     currentframe_y = 130 * 4;
@@ -207,8 +254,7 @@ int main()
                     frame_sprite_player = 0;
                 }
             }
-
-            if (PopedUp)
+            else if (PopedUp)
             {
                 if (dir == 'b') // Mod Sprite parado baixo
                 {
@@ -235,23 +281,23 @@ int main()
                     frame_sprite_player = 0;
                 }
             }
+        }
 
-            frame_sprite_player += 0.09; // FPS sprite
+        frame_sprite_player += 0.09; // FPS sprite
 
-            if (espera_Sprite_Player > 0) // espera para troca de sprite parado e movimento player
-            {
-                espera_Sprite_Player--;
-            }
+        if (espera_Sprite_Player > 0) // espera para troca de sprite parado e movimento player
+        {
+            espera_Sprite_Player--;
+        }
 
-            if (frame_sprite_player > Frames_Player) // retorno para sprite player inicial
-            {
-                frame_sprite_player -= Frames_Player;
-            }
+        if (frame_sprite_player > Frames_Player) // retorno para sprite player inicial
+        {
+            frame_sprite_player -= Frames_Player;
+        }
 
-            if (dir == 'c' && espera_Sprite_Player == 0) // caso parado para cima travar sprite
-            {
-                al_draw_bitmap_region(Sprite_Player, 0, currentframe_y, 120, 130, pl_x, pl_y, 0);
-            }
+        if (dir == 'c' && espera_Sprite_Player == 0) // caso parado para cima travar sprite
+        {
+            al_draw_bitmap_region(Sprite_Player, 0, currentframe_y, 120, 130, pl_x, pl_y, 0);
         }
 
         al_clear_to_color(al_map_rgb(rgbBG[0], rgbBG[1], rgbBG[2])); // Cor BG
@@ -291,7 +337,7 @@ int main()
                     cout << timer_auxiliar;
                     timer_auxiliar--;
                 }
-                else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE && timer_auxiliar == 0)
+                else if (key[ALLEGRO_KEY_SPACE] && timer_auxiliar == 0)
                 {
                     auxiliar--;
                     timer_auxiliar = 60;
@@ -347,7 +393,7 @@ int main()
                 }
             }
 
-            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true && auxiliar == 0)
+            if ((key[ALLEGRO_KEY_SPACE] && interacao == true) || PopedUp == true && auxiliar == 0)
             {
                 //------------Inicializar PopUp resposta-----------------------
                 PopedUp = true;
@@ -374,57 +420,68 @@ int main()
                 if (mouse_x > displayx / 2 - 50 && mouse_x < displayx / 2 + 50 && mouse_y > displayy / 2 + 90 && mouse_y < displayy / 2 + 140)
                 {
                     al_draw_bitmap(Botao_OK_HL, displayx / 2 - 50, displayy / 2 + 90, 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 50 && mouseClickPositionX < displayx / 2 + 50 && mouseClickPositionY > displayy / 2 + 90 && mouseClickPositionY < displayy / 2 + 140)
                     {
                         PopedUp = false;
                         if (X > 9)
                             X = 0;
                         if (Y > 9)
                             Y = 0;
+
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 200 && mouse_x < displayx / 2 - 200 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                 {
                     al_draw_bitmap(Arrow_up_HL, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4), 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 200 && mouseClickPositionX < displayx / 2 - 200 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) && mouseClickPositionY < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                     {
                         X++;
                         if (X > 10)
                             X = 1;
                         cout << X;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 200 && mouse_x < displayx / 2 - 200 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                 {
                     al_draw_bitmap(Arrow_down_HL, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 200 && mouseClickPositionX < displayx / 2 - 200 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouseClickPositionY < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                     {
                         X--;
                         if (X < 1)
                             X = 10;
                         cout << X;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                 {
                     al_draw_bitmap(Arrow_up_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 25 && mouseClickPositionX < displayx / 2 - 25 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) && mouseClickPositionY < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                     {
                         Y++;
                         if (Y > 10)
                             Y = 1;
                         cout << Y;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                 {
                     al_draw_bitmap(Arrow_down_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 25 && mouseClickPositionX < displayx / 2 - 25 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouseClickPositionY < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                     {
                         Y--;
                         if (Y < 1)
                             Y = 10;
                         cout << Y;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
             }
@@ -443,7 +500,7 @@ int main()
                     cout << timer_auxiliar;
                     timer_auxiliar--;
                 }
-                else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE && timer_auxiliar == 0)
+                else if (key[ALLEGRO_KEY_SPACE] && timer_auxiliar == 0)
                 {
                     auxiliar--;
                     timer_auxiliar = 60;
@@ -499,7 +556,7 @@ int main()
                 }
             }
 
-            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true && auxiliar == 0)
+            if ((key[ALLEGRO_KEY_SPACE] && interacao == true) || PopedUp == true && auxiliar == 0)
             {
                 //------------Inicializar PopUp resposta-----------------------
                 PopedUp = true;
@@ -526,57 +583,68 @@ int main()
                 if (mouse_x > displayx / 2 - 50 && mouse_x < displayx / 2 + 50 && mouse_y > displayy / 2 + 90 && mouse_y < displayy / 2 + 140)
                 {
                     al_draw_bitmap(Botao_OK_HL, displayx / 2 - 50, displayy / 2 + 90, 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 50 && mouseClickPositionX < displayx / 2 + 50 && mouseClickPositionY > displayy / 2 + 90 && mouseClickPositionY < displayy / 2 + 140)
                     {
                         PopedUp = false;
                         if (X > 9)
                             X = 0;
                         if (Y > 9)
                             Y = 0;
+
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 200 && mouse_x < displayx / 2 - 200 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                 {
                     al_draw_bitmap(Arrow_up_HL, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4), 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 200 && mouseClickPositionX < displayx / 2 - 200 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) && mouseClickPositionY < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                     {
                         X++;
                         if (X > 10)
                             X = 1;
                         cout << X;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 200 && mouse_x < displayx / 2 - 200 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                 {
                     al_draw_bitmap(Arrow_down_HL, displayx / 2 - 200, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 200 && mouseClickPositionX < displayx / 2 - 200 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouseClickPositionY < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                     {
                         X--;
                         if (X < 1)
                             X = 10;
                         cout << X;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                 {
                     al_draw_bitmap(Arrow_up_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 25 && mouseClickPositionX < displayx / 2 - 25 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) && mouseClickPositionY < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                     {
                         Y++;
                         if (Y > 10)
                             Y = 1;
                         cout << Y;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                 {
                     al_draw_bitmap(Arrow_down_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 25 && mouseClickPositionX < displayx / 2 - 25 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouseClickPositionY < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                     {
                         Y--;
                         if (Y < 1)
                             Y = 10;
                         cout << Y;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
             }
@@ -593,7 +661,7 @@ int main()
                     cout << timer_auxiliar;
                     timer_auxiliar--;
                 }
-                else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE && timer_auxiliar == 0)
+                else if (key[ALLEGRO_KEY_SPACE] && timer_auxiliar == 0)
                 {
                     auxiliar--;
                     timer_auxiliar = 60;
@@ -642,7 +710,7 @@ int main()
                 }
             }
 
-            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true && auxiliar == 0)
+            if ((key[ALLEGRO_KEY_SPACE] && interacao == true) || PopedUp == true && auxiliar == 0)
             {
                 //------------Inicializar PopUp resposta-----------------------
                 PopedUp = true;
@@ -669,42 +737,49 @@ int main()
                 if (mouse_x > displayx / 2 - 50 && mouse_x < displayx / 2 + 50 && mouse_y > displayy / 2 + 90 && mouse_y < displayy / 2 + 140)
                 {
                     al_draw_bitmap(Botao_OK_HL, displayx / 2 - 50, displayy / 2 + 90, 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 50 && mouseClickPositionX < displayx / 2 + 50 && mouseClickPositionY > displayy / 2 + 90 && mouseClickPositionY < displayy / 2 + 140)
                     {
                         PopedUp = false;
                         if (X > 9)
                             X = 0;
                         if (Y > 9)
                             Y = 0;
+
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) && mouse_y < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                 {
                     al_draw_bitmap(Arrow_up_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4), 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 25 && mouseClickPositionX < displayx / 2 - 25 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) && mouseClickPositionY < displayy / 2 - 150 + ((300 - 90) / 4 + 25))
                     {
                         resp3++;
                         if (resp3 > 1)
                             resp3 = -1;
                         cout << resp3;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
                 else if (mouse_x > displayx / 2 - 25 && mouse_x < displayx / 2 - 25 + 50 && mouse_y > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouse_y < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                 {
                     al_draw_bitmap(Arrow_down_HL, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
-                    if (event.mouse.pressure)
+                    if (mouseClickPositionX > displayx / 2 - 25 && mouseClickPositionX < displayx / 2 - 25 + 50 && mouseClickPositionY > displayy / 2 - 150 + ((300 - 90) / 4) * 3 && mouseClickPositionY < displayy / 2 - 150 + (((300 - 90) / 4) * 3 + 25))
                     {
                         resp3--;
                         if (resp3 < -1)
                             resp3 = 1;
                         cout << resp3;
+                        mouseClickPositionX = -100;
+                        mouseClickPositionY = -100;
                     }
                 }
             }
         }
 
         //------------------------interção Portas--------------------------------
-        if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
+        if (key[ALLEGRO_KEY_SPACE])
         {
             if (pl_x + 60 > PFase_1.pos_x1 && pl_x + 60 < PFase_1.pos_x2 && pl_y + 65 > PFase_1.pos_y1 && pl_y + 65 < PFase_1.pos_y2 && PFase_1.inter == true)
             {
@@ -771,12 +846,6 @@ int main()
         al_draw_text(font, al_map_rgb(200, 255, 0), displayx - 5, 50, 2, "Aperte 'W' 'A' 'S' 'D' para andar");
 
         al_flip_display();
-
-        //------------------Fechar Jogo-------------------
-        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-        {
-            break;
-        }
     }
 
     al_destroy_bitmap(Operador_Menor);
