@@ -79,7 +79,7 @@ int main()
 
     float frame_sprite_player = 0.f;
     float mouse_x, mouse_y;
-    int pl_x = 0, pl_y = 0;
+    int pl_x = 500, pl_y = 500;
     int currentframe_y = 130;
     int espera_Sprite_Player = 0;
     int Frames_Player = 3;
@@ -89,7 +89,7 @@ int main()
     int X = 1;
     int Y = 1;
     int resp1 = 3, resp2 = 9, resp3 = 0;
-    int auxiliar = 0;
+    int auxiliar = 0, timer_auxiliar = 0;
 
     //------------------------Portas Menu---------------------------
     HitBoxPortas PFase_1, PFase_2, PFase_3, Psaida_1, Psaida_2, Psaida_3;
@@ -135,6 +135,8 @@ int main()
 
         ALLEGRO_EVENT event;
         al_wait_for_event(event_queue, &event);
+
+        cout << Fase;
 
         //-------------POSIÇOES MOUSE----------------------
         if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
@@ -257,8 +259,22 @@ int main()
         //------------------------ Construção de cenario -------------------------------------------
         if (Fase == 0) // Menu
         {
+            if (PFase_1.inter)
+                al_draw_text(font, al_map_rgb(0, 255, 0), PFase_1.pos_x1 + 70, PFase_1.pos_y1 - 30, ALLEGRO_ALIGN_CENTER, "FASE 1 - ABERTO");
+            else
+                al_draw_text(font, al_map_rgb(255, 0, 0), PFase_1.pos_x1 + 70, PFase_1.pos_y1 - 30, ALLEGRO_ALIGN_CENTER, "FASE 1 - FECHADO");
             al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_1.pos_x1, PFase_1.pos_y1, 0);
+
+            if (PFase_2.inter)
+                al_draw_text(font, al_map_rgb(0, 255, 0), PFase_2.pos_x1 + 70, PFase_2.pos_y1 - 30, ALLEGRO_ALIGN_CENTER, "FASE 2 - ABERTO");
+            else
+                al_draw_text(font, al_map_rgb(255, 0, 0), PFase_2.pos_x1 + 70, PFase_2.pos_y1 - 30, ALLEGRO_ALIGN_CENTER, "FASE 2 - FECHADO");
             al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_2.pos_x1, PFase_2.pos_y1, 0);
+
+            if (PFase_3.inter)
+                al_draw_text(font, al_map_rgb(0, 255, 0), PFase_3.pos_x1 + 70, PFase_3.pos_y1 - 30, ALLEGRO_ALIGN_CENTER, "FASE 3 - ABERTO");
+            else
+                al_draw_text(font, al_map_rgb(255, 0, 0), PFase_3.pos_x1 + 70, PFase_3.pos_y1 - 30, ALLEGRO_ALIGN_CENTER, "FASE 3 - FECHADO");
             al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, PFase_3.pos_x1, PFase_3.pos_y1, 0);
         }
         else if (Fase == 1) // Fase 1
@@ -267,7 +283,43 @@ int main()
             al_draw_bitmap_region(BFase_1_2_3, 500, 500, 20, 29, 140, 139, 0);
             al_draw_bitmap_region(BFase_1_2_3, 500, 500, 15, 29, 180, 139, 0);
             al_draw_bitmap_region(BFase_1_2_3, 500, 500, 15, 29, 210, 139, 0);
-            if (PopedUp == false)
+
+            if (PopedUp && auxiliar > 0)
+            {
+                if (timer_auxiliar > 0)
+                {
+                    cout << timer_auxiliar;
+                    timer_auxiliar--;
+                }
+                else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE && timer_auxiliar == 0)
+                {
+                    auxiliar--;
+                    timer_auxiliar = 60;
+                }
+
+                al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 60, ALLEGRO_ALIGN_CENTER, "Precione 'ESPAÇO' para continuar");
+
+                if (auxiliar == 3)
+                {
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "Em programação temos varios tipos de comandos");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "neste primeiro momento iremos ver o 'if' e 'else' em portugues respectivamente se e senão");
+                }
+                else if (auxiliar == 2)
+                {
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 120, ALLEGRO_ALIGN_CENTER, "if é uma chamada que recebe 1 parametro ou seja ela recebe 1 valor");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "se este valor for verdadeiro acontecera oque esta dentro de suas chaves se não acontecerá oque esta em else");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "veja que neste codigo temos o if recebendo uma conta e dizendo que ela é igual a 3");
+                }
+                else if (auxiliar == 1)
+                {
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "Vá ate o quadrado em azul que está cercando o nosso if e quando ele ficar amarelo interaja com ele");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "use o menu que se abrirá para tornar a expreção verdadeira para você sair e avançar para o nosso proximo nivel");
+                }
+                else if (auxiliar == 0)
+                    PopedUp = false;
+            }
+
+            if (PopedUp == false || (PopedUp && auxiliar > 0))
             {
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 148, 150, 0, "%d", X);
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 180, 150, 0, "%d", Y);
@@ -295,7 +347,7 @@ int main()
                 }
             }
 
-            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true)
+            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true && auxiliar == 0)
             {
                 //------------Inicializar PopUp resposta-----------------------
                 PopedUp = true;
@@ -384,7 +436,41 @@ int main()
             al_draw_bitmap_region(BFase_1_2_3, 500, 500, 15, 29, 180, 139, 0);
             al_draw_bitmap_region(BFase_1_2_3, 500, 500, 30, 29, 195, 139, 0);
 
-            if (PopedUp == false)
+            if (PopedUp && auxiliar > 0)
+            {
+                if (timer_auxiliar > 0)
+                {
+                    cout << timer_auxiliar;
+                    timer_auxiliar--;
+                }
+                else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE && timer_auxiliar == 0)
+                {
+                    auxiliar--;
+                    timer_auxiliar = 60;
+                }
+
+                al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 60, ALLEGRO_ALIGN_CENTER, "Precione 'ESPAÇO' para continuar");
+
+                if (auxiliar == 3)
+                {
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "Agora você verá que não precisamos usar igualdades, ");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "mas tambem diferenças para fazer as verificações do 'if'");
+                }
+                else if (auxiliar == 2)
+                {
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "em programação o simbolo '!=' siginifica diferente");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "veja que na expressão deste if precisamos que o lado da expreção de soma seja diferente de '9'");
+                }
+                else if (auxiliar == 1)
+                {
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "Então como na fase anterior va ate o quadrado interaja com ele");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "e faça a expreção se tornar verdadeira para prosseguirmos");
+                }
+                else if (auxiliar == 0)
+                    PopedUp = false;
+            }
+
+            if (PopedUp == false || (PopedUp && auxiliar > 0))
             {
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 148, 150, 0, "%d", X);
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 180, 150, 0, "%d", Y);
@@ -413,7 +499,7 @@ int main()
                 }
             }
 
-            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true)
+            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true && auxiliar == 0)
             {
                 //------------Inicializar PopUp resposta-----------------------
                 PopedUp = true;
@@ -500,7 +586,36 @@ int main()
             al_draw_bitmap(BFase_1_2_3, 10, 10, 0);
             al_draw_bitmap_region(BFase_1_2_3, 500, 500, 85, 29, 140, 139, 0);
 
-            if (PopedUp == false)
+            if (PopedUp && auxiliar > 0)
+            {
+                if (timer_auxiliar > 0)
+                {
+                    cout << timer_auxiliar;
+                    timer_auxiliar--;
+                }
+                else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE && timer_auxiliar == 0)
+                {
+                    auxiliar--;
+                    timer_auxiliar = 60;
+                }
+
+                al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 60, ALLEGRO_ALIGN_CENTER, "Precione 'ESPAÇO' para continuar");
+
+                if (auxiliar == 2)
+                {
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "Aqui irei te mostrar que as condições do if tambem podem ser dadas por outras Operadores");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "alguns dos mais usados são '>' maior que, '<' menor que");
+                }
+                else if (auxiliar == 1)
+                {
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "Atualmente a verificação do nosso if está como 3 = 9 oque sabemos que é uma afirmação falsa");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "tente mudar a expreção tornando a verdadeira apenas mudando o Operador");
+                }
+                else if (auxiliar == 0)
+                    PopedUp = false;
+            }
+
+            if (PopedUp == false || (PopedUp && auxiliar > 0))
             {
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 148, 150, 0, "%d", X);
                 al_draw_textf(font, al_map_rgb(255, 255, 255), 213, 150, 0, "%d", Y);
@@ -508,11 +623,12 @@ int main()
                     al_draw_textf(font, al_map_rgb(255, 255, 255), 182, 150, 0, ">");
                 else if (resp3 == -1)
                     al_draw_textf(font, al_map_rgb(255, 255, 255), 182, 150, 0, "<");
+                else if (resp3 == 0)
+                    al_draw_textf(font, al_map_rgb(255, 255, 255), 182, 150, 0, "=");
                 if (resp3 == -1)
                 {
-                    al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, Psaida_2.pos_x1, Psaida_2.pos_y1, 0);
-                    Psaida_2.inter = true;
-                    PFase_3.inter = true;
+                    al_draw_bitmap_region(Sprite_Preto, 0, 0, 140, 140, Psaida_3.pos_x1, Psaida_3.pos_y1, 0);
+                    Psaida_3.inter = true;
                 }
                 if (pl_x - 30 < 100 + 140 && pl_x + 120 > 100 && pl_y - 30 < 139 + 29)
                 {
@@ -526,7 +642,7 @@ int main()
                 }
             }
 
-            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true)
+            if ((event.keyboard.keycode == ALLEGRO_KEY_SPACE && interacao == true) || PopedUp == true && auxiliar == 0)
             {
                 //------------Inicializar PopUp resposta-----------------------
                 PopedUp = true;
@@ -541,6 +657,8 @@ int main()
                     al_draw_bitmap(Operador_Maior, displayx / 2 - 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
                 else if (resp3 == -1)
                     al_draw_bitmap(Operador_Menor, displayx / 2 - 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
+                else if (resp3 == 0)
+                    al_draw_bitmap(Operador_igualdade, displayx / 2 - 25, displayy / 2 - 150 - 10 + ((300 - 90) / 4) * 2, 0);
                 al_draw_bitmap(Arrow_down, displayx / 2 - 25, displayy / 2 - 150 + ((300 - 90) / 4) * 3, 0);
 
                 al_draw_bitmap_region(Num_7_Seg, 10 + (29 * Y) + (32 * (Y - 1)), 167, 32, 60, displayx / 2 + 100, displayy / 2 - 150 - 19 + ((300 - 90) / 4) * 2, 0);
@@ -584,7 +702,7 @@ int main()
                 }
             }
         }
-        
+
         //------------------------interção Portas--------------------------------
         if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
         {
@@ -592,45 +710,68 @@ int main()
             {
                 Fase = 1;
                 pl_x = 990;
-                pl_y = 560;
-                X = 0;
-                Y = 0;
+                pl_y = 460;
+                X = 5;
+                Y = 7;
+                PopedUp = true;
+                auxiliar = 3;
+                timer_auxiliar = 60;
             }
             else if (pl_x + 60 > PFase_2.pos_x1 && pl_x + 60 < PFase_2.pos_x2 && pl_y + 65 > PFase_2.pos_y1 && pl_y + 65 < PFase_2.pos_y2 && PFase_2.inter == true)
             {
                 Fase = 2;
                 pl_x = 990;
-                pl_y = 560;
+                pl_y = 460;
                 X = 5;
                 Y = 4;
+                PopedUp = true;
+                auxiliar = 3;
+                timer_auxiliar = 60;
             }
             else if (pl_x + 60 > PFase_3.pos_x1 && pl_x + 60 < PFase_3.pos_x2 && pl_y + 65 > PFase_3.pos_y1 && pl_y + 65 < PFase_3.pos_y2 && PFase_3.inter == true)
             {
                 Fase = 3;
                 pl_x = 990;
-                pl_y = 560;
+                pl_y = 460;
                 X = 3;
                 Y = 9;
+                resp3 = 0;
+                PopedUp = true;
+                auxiliar = 2;
+                timer_auxiliar = 60;
             }
             else if (pl_x + 60 > Psaida_1.pos_x1 && pl_x + 60 < Psaida_1.pos_x2 && pl_y + 65 > Psaida_1.pos_y1 && pl_y + 65 < Psaida_1.pos_y2 && Psaida_1.inter == true)
             {
                 Fase = 0;
                 pl_x = PFase_1.pos_x1 + ((PFase_1.pos_x1 - PFase_1.pos_x2) / 2);
                 pl_y = PFase_1.pos_y1 + ((PFase_1.pos_y1 - PFase_1.pos_y2) / 2);
+                Psaida_1.inter = false;
             }
             else if (pl_x + 60 > Psaida_2.pos_x1 && pl_x + 60 < Psaida_2.pos_x2 && pl_y + 65 > Psaida_2.pos_y1 && pl_y + 65 < Psaida_2.pos_y2 && Psaida_2.inter == true)
             {
                 Fase = 0;
                 pl_x = Psaida_2.pos_x1 + ((Psaida_2.pos_x1 - Psaida_2.pos_x2) / 2);
                 pl_y = Psaida_2.pos_y1 + ((Psaida_2.pos_y1 - Psaida_2.pos_y2) / 2);
+                Psaida_2.inter = false;
+            }
+            else if (pl_x + 60 > Psaida_3.pos_x1 && pl_x + 60 < Psaida_3.pos_x2 && pl_y + 65 > Psaida_3.pos_y1 && pl_y + 65 < Psaida_3.pos_y2 && Psaida_3.inter == true)
+            {
+                Fase = 0;
+                pl_x = Psaida_3.pos_x1 + ((Psaida_3.pos_x1 - Psaida_3.pos_x2) / 2);
+                pl_y = Psaida_3.pos_y1 + ((Psaida_3.pos_y1 - Psaida_3.pos_y2) / 2);
+                Psaida_3.inter = false;
             }
         }
 
         //------------------Animação player---------------------------------------
         al_draw_bitmap_region(Sprite_Player, 120 * (int)frame_sprite_player, currentframe_y, 120, 130, pl_x, pl_y, 0);
 
+        al_draw_text(font, al_map_rgb(200, 255, 0), displayx - 5, 10, 2, "Comandos:");
+        al_draw_text(font, al_map_rgb(200, 255, 0), displayx - 5, 30, 2, "Aperte 'ESPAÇO' para interagir");
+        al_draw_text(font, al_map_rgb(200, 255, 0), displayx - 5, 50, 2, "Aperte 'W' 'A' 'S' 'D' para andar");
+
         al_flip_display();
-        
+
         //------------------Fechar Jogo-------------------
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
         {
