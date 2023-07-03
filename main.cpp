@@ -510,7 +510,7 @@ int main()
 
                 if (auxiliar == 3)
                 {
-                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "Agora você verá que não precisamos usar igualdades, ");
+                    al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 100, ALLEGRO_ALIGN_CENTER, "Agora você verá que não precisamos usar apenas igualdades, ");
                     al_draw_text(font, al_map_rgb(200, 255, 0), displayx / 2, displayy - 80, ALLEGRO_ALIGN_CENTER, "mas tambem diferenças para fazer as verificações do 'if'");
                 }
                 else if (auxiliar == 2)
@@ -700,12 +700,14 @@ int main()
                 }
                 if (pl_x - 30 < 100 + 140 && pl_x + 120 > 100 && pl_y - 30 < 139 + 29)
                 {
-                    al_draw_bitmap(HLFase_1_HTBox, 100, 139, 0);
+                    if (!PopedUp || resp3 != -1)
+                        al_draw_bitmap(HLFase_1_HTBox, 100, 139, 0);
                     interacao = true;
                 }
                 else
                 {
-                    al_draw_bitmap(HLFase_1, 100, 139, 0);
+                    if (!PopedUp || resp3 != -1)
+                        al_draw_bitmap(HLFase_1, 100, 139, 0);
                     interacao = false;
                 }
             }
@@ -870,6 +872,6 @@ int main()
     al_destroy_font(arial);
     al_destroy_display(display);
     al_destroy_event_queue(event_queue);
-    
+
     return 0;
 }
